@@ -30,25 +30,25 @@ export async function run_bot() {
   client.on(Events.MessageCreate, async (message: Message) => {
     if (message.author.bot) return;
 
-    let newMessage: ChatMessage = {
-      role: "bot",
-      user_id: null,
-      user_name: "doccy",
-      display_name: "doccy",
-      message_content: message.content,
-      created_at: new Date(),
-    };
+    // let newMessage: ChatMessage = {
+    //   role: "bot",
+    //   user_id: null,
+    //   user_name: "doccy",
+    //   display_name: "doccy",
+    //   message_content: message.content,
+    //   created_at: new Date(),
+    // };
 
-    await createMessage(newMessage);
+    // await createMessage(newMessage);
 
     console.log(
-      `[${message.guild?.name} | #${message.channel.id}] ${message.author.tag}: ${message.content}`
+      `[${message.guild?.name} | #${message.channel.id}] ${message.author.tag}: ${message.content}`,
     );
 
     if (message.reference && message.reference.messageId) {
       try {
         const repliedMessage = await message.channel.messages.fetch(
-          message.reference.messageId
+          message.reference.messageId,
         );
 
         if (repliedMessage.author.id === client.user?.id) {
@@ -79,6 +79,7 @@ async function reply(message: Message) {
 
   // Edit the thinking message with the actual response
   await thinkingMessage.edit(`${res}`);
+  await addToChatHistory(thinkingMessage);
 }
 
 async function addToChatHistory(message: Message) {

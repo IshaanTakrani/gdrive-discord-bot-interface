@@ -27,6 +27,7 @@
     "@langchain/mongodb": "^1.1.0",
     "@langchain/openai": "^1.2.1",
     "@langchain/textsplitters": "^1.0.1",
+    "@tavily/core": "^0.7.1",
     "discord.js": "^14.25.1",
     "dotenv": "^17.2.3",
     "googleapis": "^170.0.0",
@@ -34,7 +35,7 @@
     "langchain": "^1.2.10",
     "mongodb": "^7.0.0",
     "npm": "^11.7.0",
-    
+
     "zod": "^4.3.5"
   },
   "devDependencies": {
