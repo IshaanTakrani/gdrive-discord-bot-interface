@@ -28,7 +28,7 @@ const sheets = google.sheets({
 });
 
 export async function listFolder(
-  folderID: string | null | undefined = drive_folder_id
+  folderID: string | null | undefined = drive_folder_id,
 ): Promise<DriveItem[]> {
   const result: DriveItem[] = [];
 
@@ -67,7 +67,7 @@ export async function listFolder(
 }
 
 export async function getFileContent(
-  item: DriveItem
+  item: DriveItem,
 ): Promise<string | undefined> {
   if (item.mimeType === "application/vnd.google-apps.document" && item.id) {
     return parseDoc(item.id);

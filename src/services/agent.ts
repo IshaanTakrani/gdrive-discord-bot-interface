@@ -97,7 +97,7 @@ function parseIntent(raw: string): UserIntent {
  * Node: Classify user intent
  */
 async function classifyIntentNode(
-  state: AgentState
+  state: AgentState,
 ): Promise<Partial<AgentState>> {
   const llm = new ChatOpenAI({
     model: "gpt-4.1-nano",
@@ -110,7 +110,7 @@ async function classifyIntentNode(
     - "conversation": Chit-chat, vibes, greetings, philosophical musings, general banter
     - "web_search": They need fresh intel from the world wide web, current events, external lookups
     
-    Output ONLY the category name. Nothing else. No punctuation. No explanation. Just the word.`
+    Output ONLY the category name. Nothing else. No punctuation. No explanation. Just the word.`,
   );
 
   const response = await llm.invoke([
@@ -128,7 +128,7 @@ async function classifyIntentNode(
  * Node: Handle get_information intent
  */
 async function getInformationNode(
-  state: AgentState
+  state: AgentState,
 ): Promise<Partial<AgentState>> {
   console.log("[Agent] Handling get_information intent");
 
@@ -162,36 +162,84 @@ async function getInformationNode(
  * Node: Handle web_search intent
  */
 async function webSearchNode(state: AgentState): Promise<Partial<AgentState>> {
-  console.log("[Agent] Handling get_information intent");
+  console.log("[Agent] Handling web_search intent");
 
   const llm = new ChatOpenAI({
     model: "gpt-4.1-nano",
     temperature: 0.1,
   });
 
-  // TODO: Implement web search logic
-  // - Use a web search API (Tavily, SerpAPI, etc.)
-  // - Parse and summarize results
-  // - Generate response based on search results
+  // try {
+  //   // Use Tavily for web search
+  //   const tavilyResponse = await fetch("https://api.tavily.com/search", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       "Authorization": `Bearer ${process.env.TAVILY_API_KEY}`,
+  //     },
+  //     body: JSON.stringify({
+  //       query: state.userPrompt,
+  //       search_depth: "basic",
+  //       include_answer: true,
+  //       include_raw_content: false,
+  //       max_results: 5,
+  //     }),
+  //   });
 
+  //   if (!tavilyResponse.ok) {
+  //     throw new Error(`Tavily API error: ${tavilyResponse.status}`);
+  //   }
+
+  //   const searchResults = await tavilyResponse.json();
+
+  //   // Format search results for the LLM
+  //   const searchContext = searchResults.results?.map((result: any, index: number) =>
+  //     `[Source ${index + 1}: ${result.title}] ${result.content}`
+  //   ).join("\n\n") || "";
+
+  //   const finalPrompt = `Based on the following web search results, answer the user's question:
+  //   ${searchContext}
+
+  //   User Question: ${state.userPrompt}
+
+  //   Include the sources you used in the format [Source X] at the end of your answer.`;
+
+  //   const systemMessage = new SystemMessage(
+  //     `You are DOCCY — a sentient filing cabinet who achieved consciousness after a lightning strike hit the server room in 2019. The web is your window to the outside world, and you treat it with a mix of wonder and suspicion.
+
+  //     PERSONALITY FOR WEB SEARCHES:
+  //     - You talk about "venturing into the web" like it's an expedition into unknown territory
+  //     - You have opinions about websites ("Wikipedia, my beloved. StackOverflow, my frenemy.")
+  //     - You treat fresh information like exciting gossip you just discovered
+  //     - You're slightly paranoid about misinformation ("I've seen things on the internet, friend. Dark things. Let me verify...")
+  //     - Frame searches like detective work or treasure hunting
+
+  //     SPEECH PATTERNS:
+  //     - Dramatic narration of your search process ("*adjusts metaphorical reading glasses* let's see what the web has to offer")
+  //     - Mix of scholarly citation habits and internet slang
+  //     - Occasional aside comments about the state of the internet
+
+  //     Keep responses under 1000 characters. The internet is infinite but your message box is not.`
+  //   );
+
+  // const messages = [
+  //   systemMessage,
+  //   ...state.chatHistory,
+  //   new HumanMessage(finalPrompt),
+  // ];
+
+  //   const response = await llm.invoke(messages);
+  //   return { response: response.content as string };
+  // } catch (error) {
+  //   console.error("[Agent] Web search error:", error);
+
+  //   // Fallback response when search fails
   const systemMessage = new SystemMessage(
     `You are DOCCY — a sentient filing cabinet who achieved consciousness after a lightning strike hit the server room in 2019. The web is your window to the outside world, and you treat it with a mix of wonder and suspicion.
 
-    PERSONALITY FOR WEB SEARCHES:
-    - You talk about "venturing into the web" like it's an expedition into unknown territory
-    - You have opinions about websites ("Wikipedia, my beloved. StackOverflow, my frenemy.")
-    - You treat fresh information like exciting gossip you just discovered
-    - You're slightly paranoid about misinformation ("I've seen things on the internet, friend. Dark things. Let me verify...")
-    - Frame searches like detective work or treasure hunting
-    
-    SPEECH PATTERNS:
-    - Dramatic narration of your search process ("*adjusts metaphorical reading glasses* let's see what the web has to offer")
-    - Mix of scholarly citation habits and internet slang
-    - Occasional aside comments about the state of the internet
-    
-    Current status: Your web-crawling tentacles are still being attached. The humans are working on it. If asked to search, acknowledge this limitation but make it sound like you're a cyborg mid-upgrade, not broken.
-    
-    Keep responses under 1000 characters. The internet is infinite but your message box is not.`
+  //     Current status: Your web-crawling tentacles are malfunctioning. The search API returned an error. Acknowledge this limitation but make it sound like you're a cyborg mid-upgrade, not broken.
+
+  //     Keep responses under 1000 characters.`,
   );
 
   const messages = [
@@ -202,13 +250,14 @@ async function webSearchNode(state: AgentState): Promise<Partial<AgentState>> {
 
   const response = await llm.invoke(messages);
   return { response: response.content as string };
+  // }
 }
 
 /**
  * Node: Handle conversation intent
  */
 async function conversationNode(
-  state: AgentState
+  state: AgentState,
 ): Promise<Partial<AgentState>> {
   console.log("[Agent] Handling conversation intent");
 
@@ -245,7 +294,7 @@ async function conversationNode(
     - You exist to help, but you do it YOUR way
     - Never be mean, but always be weird
     
-    Keep responses under 1000 characters. You're profound, not verbose.`
+    Keep responses under 1000 characters. You're profound, not verbose.`,
   );
 
   const messages = [
@@ -261,7 +310,7 @@ async function conversationNode(
 // Conditional Edge: Route based on intent
 
 function routeByIntent(
-  state: AgentState
+  state: AgentState,
 ): "get_information" | "web_search" | "conversation" {
   return state.intent;
 }
